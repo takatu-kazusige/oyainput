@@ -61,40 +61,15 @@ void output_char(unsigned int code) {
 }
 
 void put_romaji(ROMAJI_INFO ri) {
-	if (ri.outCode1 == KEY_LEFTSHIFT) {
-		send_event(EV_KEY, KEY_LEFTSHIFT, 1);
-
-		if (ri.outCode2 != 0 ) {
-			output_char(ri.outCode2);
-		}
-		if (ri.outCode3 != 0 ) {
-			output_char(ri.outCode3);
-		}
-		send_event(EV_KEY, KEY_LEFTSHIFT, 0);
-		send_event(EV_SYN, SYN_REPORT, 0);
+	if (ri.outCode1 != 0 ) {
+		output_char(ri.outCode1);
 	}
-	else {
-		if (ri.outCode1 != 0 ) {
-			output_char(ri.outCode1);
-		}
-
-		if (ri.outCode2 == KEY_LEFTSHIFT) {
-			send_event(EV_KEY, KEY_LEFTSHIFT, 1);
-			if (ri.outCode3 != 0 ) {
-				output_char(ri.outCode3);
-			}
-			send_event(EV_KEY, KEY_LEFTSHIFT, 0);
-			send_event(EV_SYN, SYN_REPORT, 0);
-		} else {
-			if (ri.outCode2 != 0 ) {
-				output_char(ri.outCode2);
-			}
-			if (ri.outCode3 != 0 ) {
-				output_char(ri.outCode3);
-			}
-		}
+	if (ri.outCode2 != 0 ) {
+		output_char(ri.outCode2);
 	}
-
+	if (ri.outCode3 != 0 ) {
+		output_char(ri.outCode3);
+	}
 }
 
 void put_loyakey(__u16 leftOyaKeyCode) {
@@ -103,6 +78,10 @@ void put_loyakey(__u16 leftOyaKeyCode) {
 
 void put_royakey(__u16 rightOyaKeyCode) {
 	output_char(rightOyaKeyCode);
+}
+
+void put_coyakey(__u16 centerOyaKeyCode) {
+	output_char(centerOyaKeyCode);
 }
 
 Boolean is_fcitx_on(char *home_dir) {

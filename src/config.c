@@ -341,6 +341,12 @@ Boolean load_config(char* path)
 				printf("ROYAKEY: %s\n", value);
 				set_right_oyakey(kc);
 			}
+		} else if (strcasecmp(key, "COYAKEY")==0) {
+			kc = keyname_to_code(value);
+			if (kc != 0) {
+				printf("COYAKEY: %s\n", value);
+				set_right_oyakey(kc);
+			}
 		} else if (strcasecmp(key, "ONKEY")==0) {
 			kc = keyname_to_code(value);
 			if (kc != 0) {
@@ -410,6 +416,9 @@ Boolean save_config(char *path)
 	fprintf(fp, "\n");
 	fprintf(fp, "# 右親指キー　(変換キー＝HENKAN,ひらがなカタカナキー＝KATAKANAHIRAGANA)\n");
 	fprintf(fp, "ROYAKEY=HENKAN\n");
+	fprintf(fp, "\n");
+	fprintf(fp, "# 小指シフトキー　(左シフトキー＝LEFTSHIFT,右シフトキー＝RIGHTSHIFT)\n");
+	fprintf(fp, "COYAKEY=LEFTSHIFT\n");
 	fprintf(fp, "\n");
 	fprintf(fp, "# ON状態とOFF状態を連携させるIM(fcitx/ibus/auto/none)を指定。\n");
 	fprintf(fp, "#IM=auto\n");

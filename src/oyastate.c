@@ -190,6 +190,66 @@ KEYMAP_INFO oyakanaRTableRomajiDefault[] = {
 	{KEY_SLASH, MOJI_XO}
 };
 
+// 小指キー押し下げ時の配列定義
+KEYMAP_INFO oyakanaCTableRomajiDefault[] = {
+	// 左手最上段 □□□□□
+	{KEY_1, MOJI_UNDEF},
+	{KEY_2, MOJI_UNDEF},
+	{KEY_3, MOJI_UNDEF},
+	{KEY_4, MOJI_UNDEF},
+	{KEY_5, MOJI_UNDEF},
+
+	// 左手上段 □□□□□
+	{KEY_Q, MOJI_UNDEF},
+	{KEY_W, MOJI_UNDEF},
+	{KEY_E, MOJI_UNDEF},
+	{KEY_R, MOJI_UNDEF},
+	{KEY_T, MOJI_UNDEF},
+
+	// 左手中段 □□□□□
+	{KEY_A, MOJI_UNDEF},
+	{KEY_S, MOJI_UNDEF},
+	{KEY_D, MOJI_UNDEF},
+	{KEY_F, MOJI_UNDEF},
+	{KEY_G, MOJI_UNDEF},
+
+	// 左手下段  ぴ□□ぷぺ
+	{KEY_Z, MOJI_UNDEF},
+	{KEY_X, MOJI_PI},
+	{KEY_C, MOJI_UNDEF},
+	{KEY_V, MOJI_PU},
+	{KEY_B, MOJI_PE},
+
+	// 右手最上段 □□□□□□
+	{KEY_6, MOJI_UNDEF},
+	{KEY_7, MOJI_UNDEF},
+	{KEY_8, MOJI_UNDEF},
+	{KEY_9, MOJI_UNDEF},
+	{KEY_0, MOJI_UNDEF},
+	{KEY_MINUS, MOJI_UNDEF},
+
+	// 右手上段 □□□□□
+	{KEY_Y, MOJI_UNDEF},
+	{KEY_U, MOJI_UNDEF},
+	{KEY_I, MOJI_UNDEF},
+	{KEY_O, MOJI_UNDEF},
+	{KEY_P, MOJI_UNDEF},
+
+	// 右手中段 ぱ□□□□
+	{KEY_H, MOJI_PA},
+	{KEY_J, MOJI_UNDEF},
+	{KEY_K, MOJI_UNDEF},
+	{KEY_L, MOJI_UNDEF},
+	{KEY_SEMICOLON, MOJI_UNDEF},
+
+	// 右手下段 □□□□ぽ
+	{KEY_N, MOJI_UNDEF},
+	{KEY_M, MOJI_UNDEF},
+	{KEY_COMMA, MOJI_UNDEF},
+	{KEY_DOT, MOJI_PO},
+	{KEY_SLASH, MOJI_UNDEF}
+};
+
 ROMAJI_INFO romaKeys[] = {
 	[MOJI_UNDEF] = {0,0,0}, /* undef */
 	[MOJI_A] = {KEY_A,0,0}, /* MOJI_A 1 */
@@ -317,9 +377,11 @@ ROMAJI_INFO romaKeys[] = {
 KEYMAP_INFO* oyakanaTableRomaji;
 KEYMAP_INFO* oyakanaLTableRomaji;
 KEYMAP_INFO* oyakanaRTableRomaji;
+KEYMAP_INFO* oyakanaCTableRomaji;
 int oyakanaTableRomajiSize = 0;
 int oyakanaLTableRomajiSize = 0;
 int oyakanaRTableRomajiSize = 0;
+int oyakanaCTableRomajiSize = 0;
 static __u16* mojiKeyTable = 0;
 static int mojiKeyTableSize = 0;
 static int		_state;
@@ -340,6 +402,7 @@ long e_nicolaTime = 50; //	親指単独打鍵みなし期間
 // 親指シフトキーとみなすキーコード
 __u16 e_loya_keycode = KEY_SPACE; // KEY_MUHENKAN
 __u16 e_roya_keycode = KEY_HENKAN;
+__u16 e_coya_keycode = KEY_LEFTSHIFT;
 
 static OYAYUBI_EVENT timer_ev;
 static OYAYUBI_EVENT otherkey_ev;
@@ -353,6 +416,12 @@ void set_left_oyakey(__u16 kc) {
 void set_right_oyakey(__u16 kc) {
 	if (kc != 0) {
 		e_roya_keycode = kc;
+	}
+}
+
+void set_center_oyakey(__u16 kc) {
+	if (kc != 0) {
+		e_coya_keycode = kc;
 	}
 }
 
@@ -375,12 +444,15 @@ void oyayubi_state_init() {
 	oyakanaTableRomaji = (KEYMAP_INFO*)malloc(sizeof(oyakanaTableRomajiDefault));
 	oyakanaLTableRomaji = (KEYMAP_INFO*)malloc(sizeof(oyakanaLTableRomajiDefault));
 	oyakanaRTableRomaji = (KEYMAP_INFO*)malloc(sizeof(oyakanaRTableRomajiDefault));
+	oyakanaCTableRomaji = (KEYMAP_INFO*)malloc(sizeof(oyakanaCTableRomajiDefault));
 	memcpy(oyakanaTableRomaji, oyakanaTableRomajiDefault, sizeof(oyakanaTableRomajiDefault));
 	memcpy(oyakanaLTableRomaji, oyakanaLTableRomajiDefault, sizeof(oyakanaLTableRomajiDefault));
 	memcpy(oyakanaRTableRomaji, oyakanaRTableRomajiDefault, sizeof(oyakanaRTableRomajiDefault));
+	memcpy(oyakanaCTableRomaji, oyakanaCTableRomajiDefault, sizeof(oyakanaCTableRomajiDefault));
 	oyakanaTableRomajiSize = sizeof(oyakanaTableRomajiDefault) / sizeof(KEYMAP_INFO);
 	oyakanaLTableRomajiSize = sizeof(oyakanaLTableRomajiDefault) / sizeof(KEYMAP_INFO);
 	oyakanaRTableRomajiSize = sizeof(oyakanaRTableRomajiDefault) / sizeof(KEYMAP_INFO);
+	oyakanaCTableRomajiSize = sizeof(oyakanaCTableRomajiDefault) / sizeof(KEYMAP_INFO);
 
 	_state = STATE_FIRST;
 	_moji = 0;
@@ -395,7 +467,7 @@ void oyayubi_state_init() {
 }
 
 Boolean is_moji_key(__u16 code) {
-	if (code == e_loya_keycode || code == e_roya_keycode) {
+	if (code == e_loya_keycode || code == e_roya_keycode || code == e_coya_keycode) {
 		return FALSE;
 	}
 	for(int i = 0; i < mojiKeyTableSize; i++) {
@@ -464,6 +536,25 @@ void add_right_key_moji(__u16 kc, int m){
 	oyakanaRTableRomajiSize++;
 }
 
+void add_center_key_moji(__u16 kc, int m){
+	for(int i = 0; i < oyakanaCTableRomajiSize; i++) {
+		KEYMAP_INFO *p = oyakanaCTableRomaji + i;
+		if (p->keyCode == kc) {
+			p->moji = m;
+			return;
+		}
+	}
+
+	KEYMAP_INFO* newtbl = (KEYMAP_INFO*)malloc((oyakanaCTableRomajiSize + 1)*sizeof(KEYMAP_INFO));
+	memcpy(newtbl, oyakanaCTableRomaji, oyakanaCTableRomajiSize * sizeof(KEYMAP_INFO));
+	free(oyakanaCTableRomaji);
+	oyakanaCTableRomaji = newtbl;
+
+	KEYMAP_INFO new_keymap_info = { kc, m };
+	oyakanaCTableRomaji[oyakanaCTableRomajiSize] = new_keymap_info;
+	oyakanaCTableRomajiSize++;
+}
+
 void create_infotables() {
 	__u16 buffer[BUFSIZE];
 	__u16 *p = buffer;
@@ -516,6 +607,22 @@ void create_infotables() {
 			}
 		}
 	}
+	len = oyakanaCTableRomajiSize;
+	for(int i = 0; i < len; i++) {
+		if (p - buffer >=BUFSIZE) break;
+		KEYMAP_INFO *ki = oyakanaCTableRomaji + i;
+		if(ki->keyCode != 0) {
+			Boolean find_flg = FALSE;
+			for(__u16 *c = buffer ; c < p ; c++) {
+				if(*c == ki->keyCode) {
+					find_flg = TRUE;
+				}
+			}
+			if (! find_flg) {
+				*p++ = ki->keyCode;
+			}
+		}
+	}
 	mojiKeyTableSize = (p-buffer);
 	mojiKeyTable = (__u16*)malloc(mojiKeyTableSize*sizeof(__u16));
 	__u16 *d = mojiKeyTable;
@@ -528,6 +635,7 @@ void close_oya_state() {
 	free(oyakanaTableRomaji) ;
 	free(oyakanaLTableRomaji);
 	free(oyakanaRTableRomaji);
+	free(oyakanaCTableRomaji);
 	free(mojiKeyTable);
 	mojiKeyTable = NULL;
 	mojiKeyTableSize = 0;
@@ -564,7 +672,7 @@ Boolean is_moji_up(OYAYUBI_EVENT ev) {
 }
 
 Boolean is_oya_down(OYAYUBI_EVENT ev) {
-	if(ev.keyCode != e_loya_keycode && ev.keyCode != e_roya_keycode) {
+	if(ev.keyCode != e_loya_keycode && ev.keyCode != e_roya_keycode && ev.keyCode != e_coya_keycode) {
 		return FALSE;
 	}
 	if (ev.eventType == ET_KEYDOWN && ! ev.isRepeat) {
@@ -574,7 +682,7 @@ Boolean is_oya_down(OYAYUBI_EVENT ev) {
 }
 
 Boolean is_oya_repeat(OYAYUBI_EVENT ev) {
-	if(ev.keyCode != e_loya_keycode && ev.keyCode != e_roya_keycode) {
+	if(ev.keyCode != e_loya_keycode && ev.keyCode != e_roya_keycode && ev.keyCode != e_coya_keycode) {
 		return FALSE;
 	}
 	if (ev.eventType == ET_KEYDOWN && ev.isRepeat) {
@@ -584,7 +692,7 @@ Boolean is_oya_repeat(OYAYUBI_EVENT ev) {
 }
 
 Boolean is_oya_up(OYAYUBI_EVENT ev) {
-	if(ev.keyCode != e_loya_keycode && ev.keyCode != e_roya_keycode) {
+	if(ev.keyCode != e_loya_keycode && ev.keyCode != e_roya_keycode && ev.keyCode != e_coya_keycode) {
 		return FALSE;
 	}
 	if (ev.eventType == ET_KEYUP) {
@@ -597,7 +705,7 @@ Boolean is_otherkey_down(OYAYUBI_EVENT ev) {
 	if(is_moji_key(ev.keyCode)) {
 		return FALSE;
 	}
-	if (ev.keyCode == e_loya_keycode || ev.keyCode == e_roya_keycode) {
+	if (ev.keyCode == e_loya_keycode || ev.keyCode == e_roya_keycode || ev.keyCode == e_coya_keycode) {
 		return FALSE;
 	}
 	return TRUE;
@@ -661,13 +769,25 @@ void output_oya_moji(__u16 okey, __u16 mkey) {
 			}
 		}
 	}
+	else if (okey == e_coya_keycode) {
+		// 小指シフト
+		int len = oyakanaCTableRomajiSize;
+		for(int i = 0; i < len; i++) {
+			KEYMAP_INFO *ki = oyakanaCTableRomaji + i;
+			if(ki->keyCode == mkey && ki->moji <= MOJI_MAX) {
+				ROMAJI_INFO *ri = romaKeys + ki->moji;
+				put_romaji(*ri);
+				return;
+			}
+		}
+	}
 }
 
 Boolean is_acceptable(int keycode) {
 	if(is_moji_key(keycode) ) {
 		return TRUE;
 	}
-	if (keycode == e_loya_keycode || keycode == e_roya_keycode ) {
+	if (keycode == e_loya_keycode || keycode == e_roya_keycode  || keycode == e_coya_keycode ) {
 		return TRUE;
 	}
 	return FALSE;

@@ -94,9 +94,6 @@ void put_romaji(ROMAJI_INFO ri) {
 			}
 		}
 	}
-	if (ri.outCode3 != 0 ) {
-		output_char(ri.outCode3);
-	}
 }
 
 void put_loyakey(__u16 leftOyaKeyCode) {

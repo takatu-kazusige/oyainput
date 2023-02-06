@@ -61,6 +61,7 @@ KEYMAP_INFO oyakanaTableRomajiDefault[] = {
 	{KEY_L, MOJI_I},
 	{KEY_SEMICOLON, MOJI_NN},
 	{KEY_APOSTROPHE, MOJI_BS},
+	{KEY_BACKSLASH, MOJI_UNDEF},
 
 	// 右手下段 めそねほ・
 	{KEY_N, MOJI_ME},
@@ -122,6 +123,7 @@ KEYMAP_INFO oyakanaLTableRomajiDefault[] = {
 	{KEY_J, MOJI_DO},
 	{KEY_K, MOJI_GI},
 	{KEY_L, MOJI_PO},
+	{KEY_BACKSLASH, MOJI_UNDEF},
 
 	// 右手下段  ぷぞぺぼ゛
 	{KEY_N, MOJI_PU},
@@ -181,6 +183,7 @@ KEYMAP_INFO oyakanaRTableRomajiDefault[] = {
 	{KEY_K, MOJI_NO},
 	{KEY_L, MOJI_XYO},
 	{KEY_SEMICOLON, MOJI_XTU},
+	{KEY_BACKSLASH, MOJI_UNDEF},
 
 	// 右手下段 ぬゆむわぉ
 	{KEY_N, MOJI_NU},
@@ -241,6 +244,7 @@ KEYMAP_INFO oyakanaCTableRomajiDefault[] = {
 	{KEY_K, MOJI_UNDEF},
 	{KEY_L, MOJI_UNDEF},
 	{KEY_SEMICOLON, MOJI_UNDEF},
+	{KEY_BACKSLASH, MOJI_UNDEF},
 
 	// 右手下段 □□□□ぽ
 	{KEY_N, MOJI_UNDEF},

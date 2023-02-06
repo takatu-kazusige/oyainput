@@ -61,11 +61,38 @@ void output_char(unsigned int code) {
 }
 
 void put_romaji(ROMAJI_INFO ri) {
-	if (ri.outCode1 != 0 ) {
-		output_char(ri.outCode1);
+	if (ri.outCode1 == KEY_RIGHTSHIFT) {
+		send_event(EV_KEY, KEY_RIGHTSHIFT, 1);
+
+		if (ri.outCode2 != 0 ) {
+			output_char(ri.outCode2);
+		}
+		if (ri.outCode3 != 0 ) {
+			output_char(ri.outCode3);
+		}
+		send_event(EV_KEY, KEY_RIGHTSHIFT, 0);
+		send_event(EV_SYN, SYN_REPORT, 0);
 	}
-	if (ri.outCode2 != 0 ) {
-		output_char(ri.outCode2);
+	else {
+		if (ri.outCode1 != 0 ) {
+			output_char(ri.outCode1);
+		}
+
+		if (ri.outCode2 == KEY_RIGHTSHIFT) {
+			send_event(EV_KEY, KEY_RIGHTSHIFT, 1);
+			if (ri.outCode3 != 0 ) {
+				output_char(ri.outCode3);
+			}
+			send_event(EV_KEY, KEY_RIGHTSHIFT, 0);
+			send_event(EV_SYN, SYN_REPORT, 0);
+		} else {
+			if (ri.outCode2 != 0 ) {
+				output_char(ri.outCode2);
+			}
+			if (ri.outCode3 != 0 ) {
+				output_char(ri.outCode3);
+			}
+		}
 	}
 	if (ri.outCode3 != 0 ) {
 		output_char(ri.outCode3);

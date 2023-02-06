@@ -349,6 +349,20 @@ int main(int argc, char *argv[]) {
 			}
 			write(fdo, &ie, sizeof(ie));
 			break;
+		case KEY_RIGHTSHIFT:
+			if (ie.value == 1) {
+				shift_pressed = TRUE;
+				on_otherkey_down(ie.code);
+			} else if (ie.value == 0) {
+				shift_pressed = FALSE;
+				if (pressing_key != 0) {
+					send_event(EV_KEY, pressing_key, 0);
+					send_event(EV_SYN, SYN_REPORT, 0);
+					pressing_key = 0;
+				}
+			}
+			write(fdo, &ie, sizeof(ie));
+			break;
 		case KEY_LEFTALT:
 		//case KEY_RIGHTALT:
 			if (ie.value == 1) {
